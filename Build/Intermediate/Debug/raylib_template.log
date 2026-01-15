@@ -1,0 +1,50 @@
+﻿  Leaderboard.cpp
+  game.cpp
+  Generating Code...
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\xmemory(730,14): error C2672: 'std::construct_at': no matching overloaded function found
+  (compiling source file 'Source/game.cpp')
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\xutility(461,16):
+      could be '_Ty *std::construct_at(_Ty *const ,_Types ...) noexcept(<expr>)'
+          C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\xmemory(730,14):
+          the associated constraints are not satisfied
+              C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\xutility(459,50):
+              'Projectile::Projectile': no overloaded function could convert all the argument types
+                  C:\Users\aiden\Documents\Modern C++\SpaceInvaders_2023\Source\Entities.hpp(37,2):
+                  could be 'Projectile::Projectile(Vector2,EntityType) noexcept'
+                      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\xutility(459,50):
+                      'Projectile::Projectile(Vector2,EntityType) noexcept': cannot convert argument 1 from 'std::optional<Vector2>' to 'Vector2'
+                          C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\xutility(459,71):
+                          No user-defined-conversion operator available that can perform this conversion, or the operator cannot be called
+                  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\xutility(459,50):
+                  while trying to match the argument list '(std::optional<Vector2>, _Ty)'
+          with
+          [
+              _Ty=EntityType
+          ]
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\xmemory(730,14):
+      the template instantiation context (the oldest one first) is
+          C:\Users\aiden\Documents\Modern C++\SpaceInvaders_2023\Source\game.cpp(101,14):
+          see reference to function template instantiation 'Projectile &std::vector<Projectile,std::allocator<Projectile>>::emplace_back<std::optional<Vector2>&,EntityType>(std::optional<Vector2> &,EntityType &&)' being compiled
+              C:\Users\aiden\Documents\Modern C++\SpaceInvaders_2023\Source\game.cpp(101,26):
+              see the first reference to 'std::vector<Projectile,std::allocator<Projectile>>::emplace_back' in 'Game::PlayerShootingHandle'
+          C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\vector(924,24):
+          see reference to function template instantiation '_Ty &std::vector<_Ty,std::allocator<_Ty>>::_Emplace_one_at_back<std::optional<Vector2>&,EntityType>(std::optional<Vector2> &,EntityType &&)' being compiled
+          with
+          [
+              _Ty=Projectile
+          ]
+          C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\vector(845,20):
+          see reference to function template instantiation '_Ty &std::vector<_Ty,std::allocator<_Ty>>::_Emplace_back_with_unused_capacity<std::optional<Vector2>&,EntityType>(std::optional<Vector2> &,EntityType &&)' being compiled
+          with
+          [
+              _Ty=Projectile
+          ]
+          C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\vector(863,27):
+          see reference to function template instantiation 'void std::_Default_allocator_traits<_Alloc>::construct<_Ty,std::optional<Vector2>&,EntityType>(_Alloc &,_Objty *const ,std::optional<Vector2> &,EntityType &&)' being compiled
+          with
+          [
+              _Alloc=std::allocator<Projectile>,
+              _Ty=Projectile,
+              _Objty=Projectile
+          ]
+  
