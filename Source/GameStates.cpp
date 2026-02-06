@@ -1,41 +1,10 @@
-#include "game.hpp"
+#include "GameStates.hpp"
 
-void Game::Start()
-{
-	Projectiles.clear();
-	Walls.clear();
-	Aliens.clear();
-
-	InitWalls();
-	SpawnAliens();
-	background.Initialize(600);
-
-	assert(!Aliens.empty());
-	assert(!Walls.empty());
-
-	board.score = 0;
-	shootTimer = 0;
-	gameState = State::GAMEPLAY;
+void GameState::Init() {
+	game.Init();
 }
 
-void Game::End() noexcept
-{
-	Projectiles.clear();
-	Walls.clear();
-	Aliens.clear();
-	background.Stars.clear();
-	player.lives = 3;
-	player.x_pos = FscreenWidth / 2;
-	board.newHighScore = board.CheckNewHighScore();
-	gameState = State::ENDSCREEN;
-}
-
-void Game::Continue() noexcept
-{
-	gameState = State::STARTSCREEN;
-}
-
-void Game::Update()
+void GameState::Update()
 {
 	switch (gameState)
 	{
@@ -43,62 +12,35 @@ void Game::Update()
 	{
 		if (IsKeyReleased(KEY_SPACE))
 		{
-			Start();
+			gameState = State::GAMEPLAY;
 		}
 
 		break;
 	}
 	case State::GAMEPLAY:
 	{
-		RemoveDeadEntities();
-		if (IsKeyReleased(KEY_Q)) { End(); }
+		game.Update();
 
-		if (player.lives < 1) { End(); }
-
-		player.Update();
-
-		for (auto& a : Aliens)
-		{
-			if (!a.active) 
-			{
-				continue;
-			}
-			a.Update();
-
-			if (a.position.y > screenHeight - player.player_base_height) { End(); }
+		if (game.GameEnd()) {
+			gameState = State::ENDSCREEN;
 		}
-
-		if (Aliens.size() < 1) { SpawnAliens(); }
-
-		const float offset = -player.x_pos;
-		background.Update(offset / 15.0f);
-
-		for (auto& p : Projectiles) {
-			p.Update();
-		}
-		for (auto& w : Walls) {
-			w.Update();
-		}
-
-		CheckCollision();
-		if (IsKeyPressed(KEY_SPACE)) { PlayerShootingHandle(); }
-		AlienShootingHandle();
 	}
 	break;
 	case State::ENDSCREEN:
 	{
-		if (IsKeyReleased(KEY_ENTER) && !board.newHighScore)
+		if (IsKeyReleased(KEY_ENTER) && !game.NewHighscore())
 		{
-			Continue();
+			gameState = State::STARTSCREEN;
+			game.Init();
 		}
 
-		board.Update();
+		game.board_update();
 		break;
 	}
 	}
 }
 
-void Game::Render()
+void GameState::Render() const
 {
 	switch (gameState)
 	{
@@ -111,36 +53,12 @@ void Game::Render()
 	}
 	case State::GAMEPLAY:
 	{
-		background.Render();
-
-		DrawText(TextFormat("Score: %i", board.score), 50, 20, 40, YELLOW);
-		DrawText(TextFormat("Lives: %i", player.lives), 50, 70, 40, YELLOW);
-
-		int i = 0;
-		for (auto& p : resources.shipTextures) {
-			if (i++ == player.activeTexture) {
-				player.Render(p);
-				break;
-			}
-		}
-		for (const auto& p : Projectiles) {
-			if (!p.active) continue;
-			p.Render(resources.laserTexture);
-		}
-		for (const auto& w : Walls) {
-			if (!w.active) continue;
-			w.Render(resources.barrierTexture);
-		}
-		for (const auto& a : Aliens) {
-			if (!a.active) continue;
-			a.Render(resources.alienTexture);
-		}
-
+		game.Render();
 		break;
 	}
 	case State::ENDSCREEN:
 	{
-		board.Render();
+		game.board_render();
 		break;
 	}
 	}

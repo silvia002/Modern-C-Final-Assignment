@@ -1,37 +1,41 @@
 #pragma once
 #include "raylib.h"
+#include <algorithm>
 #include "Leaderboard.hpp"
 #include "Resources.hpp"
 #include "Entities.hpp"
-
-
-enum struct State
-{
-	STARTSCREEN,
-	GAMEPLAY,
-	ENDSCREEN
-};
+#include <print>
 
 struct Background
 {
-	std::vector<Star> Stars;
-
-	void Initialize(int starAmount);
+	Background() {
+		for (int i = 0; i < _starAmount; i++)
+		{
+			const Vector2 position = { static_cast<float>(GetRandomValue(-150, screenWidth + 150)) ,
+										static_cast<float>(GetRandomValue(0, screenHeight)) };
+			const Star newStar(position, static_cast<float>(GetRandomValue(1, 4) / 2));
+			Stars.push_back(newStar);
+		}
+	}
+	
 	void Update(float offset);
 	void Render() const noexcept;
+
+private:
+
+	std::vector<Star> Stars{};
+	int _starAmount = 600;
 };
 
 struct Game
 {
-	State gameState = {};
+	Game() = default;
+
+private:
+
 	float shootTimer = 0;
-
-	void Start();
+	bool gameEnd = false;
 	void End() noexcept;
-	void Continue() noexcept;
-
-	void Update();
-	void Render();
 
 	void InitWalls();
 	void RemoveDeadEntities();
@@ -51,4 +55,14 @@ struct Game
 	Leaderboard board;
 	Resources resources;
 	Player player;
+
+public:
+	bool NewHighscore() const;
+	bool GameEnd() const;
+	void board_update();
+	void board_render() const;
+
+	void Init();
+	void Update();
+	void Render() const;
 };

@@ -2,87 +2,126 @@
 #include <string>
 #include <vector>
 #include "constants.hpp"
-#include <assert.h>
+#include <cassert>
 #include <optional>
 #include <algorithm>
-
-enum struct EntityType
-{
-	PLAYER_PROJECTILE,
-	ENEMY_PROJECTILE
-};
 
 struct Player
 {
 	Player() = default;
 
-	float x_pos = FscreenWidth / 2;
-	float speed = 7;
-	float player_base_height = 70.0f;
-	float radius = 50;
-	int lives = 3;
-	int direction = 0;
-	int activeTexture = 0;
-	float timer = 0;
+	void Set_Position(float pos_x);
+	void Set_Speed(float speed);
+	void Set_Radius(float radius);
+	void Set_Lives(int lives);
+	void Set_Direction(int direction);
 
-	Rectangle source = { 0, 0, 352, 352 };
+	float Get_Position() const;
+	float Get_Speed() const;
+	float Get_Radius() const;
+	int   Get_Active_Texture() const;
+	int   Get_Lives() const;
+	int	  Get_Direction() const;
 
 	void Render(const Texture2D& texture) const noexcept;
 	void Update() noexcept;
+
+private:
+	Rectangle source = { 0, 0, 352, 352 };
+
+	float timer = 0;
+	float _pos_x = FscreenWidth / 2;
+	float _speed = 7;
+	float _radius = 50;
+
+	int   _activeTexture = 0;
+	int   _lives = 3;
+	int   _direction = 0;
 };
 
 
 struct Projectile
 {
-	Projectile(Vector2 pos, EntityType eType) noexcept : position(pos), type(eType) {};
+	Projectile(Vector2 pos, bool is_player_bullet) noexcept : _position(pos), _player_Bullet(is_player_bullet){};
 
-	Vector2 position = { 0, 0 };
-	int speed = 15;
-	bool active = true;
-	EntityType type = {};
+	void Set_Position(Vector2 position);
+	void Set_Speed(int speed);
+	void Set_Inactive();
+	void Set_Direction(int direction);
 
-	Rectangle rec = { 0, 0, 6, 30 };
-	Rectangle source = { 0, 0, 176, 176 };
+	Rectangle Get_Rec() const;
+	Vector2   Get_Position() const;
+	int       Get_Speed() const;
+	bool      Is_Active() const;
+	bool	  Is_Player_Bullet() const;
 
 	void Update() noexcept;
-	void Render(Texture2D& texture) const noexcept;
+	void Render(const Texture2D& texture) const noexcept;
+
+private:
+	Vector2 _position = { 0, 0 };
+	int     _speed = 15;
+	int     _direction = 0;
+	bool    _active = true;
+	bool	_player_Bullet{};
+	Rectangle _rec = { 0, 0, 6, 30 };
+	Rectangle _source = { 0, 0, 176, 176 };
 };
 
 struct Wall
 {
-	Wall(Vector2 pos) noexcept : position(pos) {};
+	Wall(Vector2 pos) noexcept : _position(pos) {};
 
-	Vector2 position{};
-	bool active = true;
-	int health = 50;
-	float radius = 60;
+	void Set_Position(Vector2 position);
+	void Set_Health(int health);
+	void Set_Radius(float radius);
+	void Set_Inactive();
+	
+	Vector2 Get_Position() const;
+	bool    Is_Active() const;
+	float   Get_Radius() const;
+	int     Get_Health() const;
 
-	Rectangle source = {0, 0, 704, 704 };
-
-	void Render(Texture2D& texture) const noexcept;
+	void Render(const Texture2D& texture) const noexcept;
 	void Update() noexcept;
+
+private:
+	Rectangle _source = { 0, 0, 704, 704 };
+	Vector2   _position{};
+	bool      _active = true;
+	int       _health = 50;
+	float     _radius = 60;
 };
 
 struct Alien
 {
-	Alien(Vector2 pos) noexcept : position(pos) {};
+	Alien(Vector2 pos) noexcept : _position(pos) {};
 
 	Color color = WHITE;
-	Vector2 position = { 0, 0 };
-	int x = 0;
-	int y = 0;
-	float radius = 30;
-
-	bool active = true;
-
-	bool moveRight = true;
-
 	Rectangle source = { 0, 0, 352, 352 };
 
-	int speed = 2;
+	int x = 0;
+	int y = 0;
+
+	void Set_Position(Vector2 position);
+	void Set_Radius(float radius);
+	void Set_Speed(int speed);
+	void Set_Inactive();
+
+	Vector2 Get_Position() const;
+	float   Get_Radius() const;
+	bool    Is_Active() const;
+	int     Get_Speed() const;
 
 	void Update() noexcept;
-	void Render(Texture2D& texture) const noexcept;
+	void Render(const Texture2D& texture) const noexcept;
+
+private:
+	Vector2 _position = { 0, 0 };
+	float   _radius = 30;
+	bool    _active = true;
+	bool    _moveRight = true;
+	int		_speed = 2;
 };
 
 

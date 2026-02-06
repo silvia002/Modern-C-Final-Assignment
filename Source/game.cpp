@@ -1,127 +1,86 @@
 #include "game.hpp"
-#include <iostream>
-#include <vector>
-#include <chrono>
-#include <thread>
-#include <algorithm>
-#include <print>
-#include <fstream>
 
-void Game::InitWalls()
-{
-	constexpr int   kWallCount = 5;
-	constexpr float kWallYOffset = 250.0f;
+void Game::Init() {
+	gameEnd = false;
 
-	assert(FscreenWidth > 0);
-	assert(FscreenHeight > 0);
+	player.Set_Lives(3);
+	player.Set_Position(FscreenWidth / 2);
+	InitWalls();
+	SpawnAliens();
 
-	const float wallSpacing = FscreenWidth / (kWallCount + 1);
-	assert(wallSpacing > 0.0f);
+	assert(!Aliens.empty());
+	assert(!Walls.empty());
 
-	for (int i = 0; i < kWallCount; ++i)
-	{
-		Walls.emplace_back(Vector2{ wallSpacing * (i + 1), FscreenHeight - kWallYOffset });
-	}
-}
-
-void Game::RemoveDeadEntities()
-{
-	Projectiles.erase(std::remove_if(Projectiles.begin(), Projectiles.end(), [](const Projectile& p)
-		{ return !p.active; }), Projectiles.end());
-
-	Aliens.erase(std::remove_if(Aliens.begin(), Aliens.end(), [](const Alien& a)
-		{ return !a.active; }), Aliens.end());
-
-	Walls.erase(std::remove_if(Walls.begin(), Walls.end(), [](const Wall& w)
-		{return !w.active; }), Walls.end());
-}
-
-void Game::SpawnAliens()
-{
-	constexpr int formationWidth =  8;
-	constexpr int formationHeight = 5;
-	constexpr float alienSpacing =   80.0f;
-	constexpr float formationX =    100.0f;
-	constexpr float formationY =     50.0f;
-
-	for (int row = 0; row < formationHeight; row++) {
-		for (int col = 0; col < formationWidth; col++) {
-			const Vector2 position = { formationX + 450.0f + (col * alienSpacing), formationY + (row * alienSpacing) };
-
-			Alien newAlien(position);
-			Aliens.push_back(newAlien);
-
-			std::print("Find Alien -X: {}\n", newAlien.position.x);
-			std::print("Find Alien -Y: {}\n", newAlien.position.y);
-		}
-	}
-}
-
-void Game::AlienShootingHandle()
-{
-	constexpr int ShootIntervalFrames = 1;
-	constexpr float ProjectileYOffset = 40.0f;
-
-	shootTimer += GetFrameTime();
-
-	if (shootTimer < ShootIntervalFrames || Aliens.empty())
-	{
-		return;
-	}
-
-	const size_t alienIndex = rand() % Aliens.size();
-	auto it = Aliens.begin() + alienIndex;
-	Vector2 spawnPos = it->position;
-
-	spawnPos.y += ProjectileYOffset;
-
-	Projectiles.emplace_back(spawnPos, EntityType::ENEMY_PROJECTILE);
-
+	board.score = 0;
 	shootTimer = 0;
 }
 
-std::optional<Vector2> Game::GetPlayerShootPosition() const noexcept
+void Game::Update()
 {
-	if (player.lives <= 0)
+	RemoveDeadEntities();
+	if (IsKeyReleased(KEY_Q)) { End(); }
+
+	if (player.Get_Lives() < 1) { End(); }
+
+	player.Update();
+
+	for (auto& a : Aliens)
 	{
-		return std::nullopt;
+		if (!a.Is_Active())
+		{
+			continue;
+		}
+		a.Update();
+
+		if (a.Get_Position().y > screenHeight - player.Get_Radius()) { End(); }
 	}
 
-	return Vector2{ player.x_pos, screenHeight - 130.0f };
-}
+	if (Aliens.size() < 1) { SpawnAliens(); }
 
-void Game::PlayerShootingHandle()
-{
-	auto pos = GetPlayerShootPosition();
-	if (!pos)
-	{
-		return;
+	const float offset = -player.Get_Position();
+	background.Update(offset / 15.0f);
+
+	for (auto& p : Projectiles) {
+		p.Update();
+	}
+	for (auto& w : Walls) {
+		w.Update();
 	}
 
-	Projectiles.emplace_back(pos, EntityType::PLAYER_PROJECTILE);
-}
-
-void Background::Initialize(int starAmount)
-{
-	for (int i = 0; i < starAmount; i++)
-	{
-		const Vector2 position = { static_cast<float>(GetRandomValue(-150, screenWidth + 150)) , 
-									static_cast<float>(GetRandomValue(0, screenHeight)) };
-		const Star newStar(position, static_cast<float>(GetRandomValue(1, 4) / 2));
-		Stars.push_back(newStar);
+	CheckCollision();
+	if (IsKeyPressed(KEY_SPACE)) 
+	{ 
+		PlayerShootingHandle(); 
 	}
+
+	AlienShootingHandle();
 }
 
-void Background::Update(float offset)
+void Game::Render() const
 {
-	for (auto& s : Stars) {
-		s.Update(offset);
+	background.Render();
+
+	DrawText(TextFormat("Score: %i", board.score), 50, 20, 40, YELLOW);
+	DrawText(TextFormat("Lives: %i", player.Get_Lives()), 50, 70, 40, YELLOW);
+
+	int i = 0;
+	for (const auto& p : resources.ships) {
+		if (i++ == player.Get_Active_Texture()) {
+			player.Render(p.get().get_texture());
+			break;
+		}
 	}
-}
 
-void Background::Render() const noexcept
-{
-	for (const auto& s : Stars) {
-		s.Render();
+	for (const auto& p : Projectiles) {
+		if (!p.Is_Active()) continue;
+		p.Render(resources.laser.get_texture());
+	}
+	for (const auto& w : Walls) {
+		if (!w.Is_Active()) continue;
+		w.Render(resources.barrier.get_texture());
+	}
+	for (const auto& a : Aliens) {
+		if (!a.Is_Active()) continue;
+		a.Render(resources.alien.get_texture());
 	}
 }

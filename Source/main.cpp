@@ -23,6 +23,7 @@
 
 #include "raylib.h"
 #include "game.hpp"
+#include "GameStates.hpp"
 
 
 //------------------------------------------------------------------------------------
@@ -34,18 +35,18 @@ int main()
 
     SetTargetFPS(60);
 
-    Game game = { State::STARTSCREEN };
-
+    GameState app ;
+    app.Init();
     // Main game loop
     while (!WindowShouldClose())  
     {
-        game.Update();
+        app.Update();
         // Draw
         //----------------------------------------------------------------------------------
         StartDrawing draw;
 
         ClearBackground(BLACK);
-        game.Render();
+        app.Render();
 
         //----------------------------------------------------------------------------------
     }
