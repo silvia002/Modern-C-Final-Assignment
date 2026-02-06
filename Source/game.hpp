@@ -29,10 +29,12 @@ private:
 
 struct Game
 {
-	Game() = default;
+	Game() {
+		InitWalls();
+		SpawnAliens();
+	};
 
 private:
-
 	float shootTimer = 0;
 	bool gameEnd = false;
 	void End() noexcept;
@@ -61,6 +63,7 @@ public:
 	bool GameEnd() const;
 	void board_update();
 	void board_render() const;
+	void reset();
 
 	void Init();
 	void Update();

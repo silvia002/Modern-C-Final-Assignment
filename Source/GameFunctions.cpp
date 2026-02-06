@@ -137,3 +137,19 @@ void Game::board_render() const
 {
 	board.Render();
 }
+
+void Game::reset()
+{
+	gameEnd = false;
+
+	player.Set_Lives(3);
+	player.Set_Position(FscreenWidth / 2);
+	InitWalls();
+	SpawnAliens();
+
+	assert(!Aliens.empty());
+	assert(!Walls.empty());
+
+	board.score = 0;
+	shootTimer = 0;
+}

@@ -36,7 +36,7 @@ int main()
     SetTargetFPS(60);
 
     GameState app ;
-    app.Init();
+
     // Main game loop
     while (!WindowShouldClose())  
     {

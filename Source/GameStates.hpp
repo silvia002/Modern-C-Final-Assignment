@@ -13,7 +13,6 @@ struct GameState
 		gameState = State::STARTSCREEN;
 	}
 
-	void Init();
 	void Update();
 	void Render() const;
 

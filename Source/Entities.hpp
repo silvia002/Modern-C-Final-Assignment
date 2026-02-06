@@ -8,7 +8,10 @@
 
 struct Player
 {
-	Player() = default;
+	Player() {
+		_lives = 3;
+		_pos_x = FscreenWidth / 2;
+	}
 
 	void Set_Position(float pos_x);
 	void Set_Speed(float speed);

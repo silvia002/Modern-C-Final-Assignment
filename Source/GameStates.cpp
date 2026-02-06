@@ -1,9 +1,5 @@
 #include "GameStates.hpp"
 
-void GameState::Init() {
-	game.Init();
-}
-
 void GameState::Update()
 {
 	switch (gameState)
@@ -31,7 +27,7 @@ void GameState::Update()
 		if (IsKeyReleased(KEY_ENTER) && !game.NewHighscore())
 		{
 			gameState = State::STARTSCREEN;
-			game.Init();
+			game.reset();
 		}
 
 		game.board_update();
