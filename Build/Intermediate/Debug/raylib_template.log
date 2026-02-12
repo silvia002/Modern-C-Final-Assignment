@@ -1,5 +1,7 @@
 ﻿  GameFunctions.cpp
   GameStates.cpp
+  Leaderboard.cpp
+  Entities.cpp
   collisions.cpp
   game.cpp
   main.cpp
