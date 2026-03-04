@@ -30,12 +30,12 @@
 // Program main entry point
 //------------------------------------------------------------------------------------
 int main()
-{    
-    Window window(screenWidth, screenHeight);
-
-    SetTargetFPS(60);
+{       
 
     try {
+        Window window(screenWidth, screenHeight);
+        SetTargetFPS(60);
+
         GameState app{};
 
         // Main game loop

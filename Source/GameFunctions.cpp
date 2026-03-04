@@ -36,16 +36,12 @@ void Game::SpawnAliens()
 	constexpr float alienSpacing = 80.0f;
 	constexpr float formationX = 100.0f;
 	constexpr float formationY = 50.0f;
+	Aliens.reserve(formationHeight * formationWidth);
 
 	for (int row = 0; row < formationHeight; row++) {
 		for (int col = 0; col < formationWidth; col++) {
-			const Vector2 position = { formationX + 450.0f + (col * alienSpacing), formationY + (row * alienSpacing) };
-
-			Alien newAlien(position);
-			Aliens.push_back(newAlien);
-
-			std::print("Find Alien -X: {}\n", newAlien.Get_Position().x);
-			std::print("Find Alien -Y: {}\n", newAlien.Get_Position().y);
+			const Vector2 position = { formationX + 450.0f + (col * alienSpacing), formationY + (row * alienSpacing) };			
+			Aliens.emplace_back(position);
 		}
 	}
 }

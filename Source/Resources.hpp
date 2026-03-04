@@ -1,9 +1,10 @@
 #pragma once
 #include "raylib.h"
-#include "vector"
+#include <array>
+#include <vector>
 #include <string>
 #include <string_view>
-
+using namespace std::string_view_literals;
 struct Window {
 	Window(int width, int height) {
 		InitWindow(width, height, "SPACE INVADERS");
@@ -34,7 +35,6 @@ struct NewTexture {
 	~NewTexture() noexcept {
 		if (_texture.id != 0) {
 			UnloadTexture(_texture);
-			_texture = {};
 		}
 	}
 
@@ -42,15 +42,13 @@ struct NewTexture {
 	NewTexture& operator=(const NewTexture&) = delete;
 
 	NewTexture(NewTexture&& other) noexcept
-		: _texture(other._texture) {
-		other._texture = {};
+		: _texture(std::exchange(other._texture, {})) {
 	}
 
 	NewTexture& operator=(NewTexture&& other) noexcept {
 		if (this != &other) {
 			UnloadTexture(_texture);
-			_texture = other._texture;
-			other._texture = {};
+			_texture = std::exchange(other._texture, {});
 		}
 		return *this;
 	}
@@ -64,41 +62,18 @@ private:
 };
 
 
-struct Resources {
-private:
-	std::string_view _alien_path = "./Assets/Alien.png";
-	std::string_view _barrier_path = "./Assets/Barrier.png";
-	std::string_view _ship1_path = "./Assets/Ship1.png";
-	std::string_view _ship2_path = "./Assets/Ship2.png";
-	std::string_view _ship3_path = "./Assets/Ship3.png";
-	std::string_view _laser_path = "./Assets/Laser.png";
+struct Resources {	
+	NewTexture alien{ "./Assets/Alien.png"sv };
+	NewTexture barrier{ "./Assets/Barrier.png"sv };
+	NewTexture laser{ "./Assets/Laser.png"sv };
 
-public:
-	Resources()
-		: alien(_alien_path),
-		barrier(_barrier_path),
-		ship1(_ship1_path),
-		ship2(_ship2_path),
-		ship3(_ship3_path),
-		laser(_laser_path),
-		ships{ ship1, ship2, ship3 }
-	{
-	}
-
-	NewTexture alien;
-	NewTexture barrier;
-	NewTexture ship1;
-	NewTexture ship2;
-	NewTexture ship3;
-	NewTexture laser;
-
-	std::vector<std::reference_wrapper<const NewTexture>> ships;
+	std::array<NewTexture, 3> ships{ "./Assets/Ship1.png"sv, "./Assets/Ship2.png"sv, "./Assets/Ship3.png"sv };
 };
 
 
 struct StartDrawing
 {
-	StartDrawing()
+	StartDrawing() noexcept
 	{
 		BeginDrawing();
 	}

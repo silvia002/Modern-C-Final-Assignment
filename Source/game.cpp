@@ -51,7 +51,7 @@ void Game::Render() const
 	int i = 0;
 	for (const auto& p : resources.ships) {
 		if (i++ == player.Get_Active_Texture()) {
-			player.Render(p.get().get_texture());
+			player.Render(p.get_texture());
 			break;
 		}
 	}
