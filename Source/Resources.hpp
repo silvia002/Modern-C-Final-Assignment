@@ -12,7 +12,7 @@ struct Window {
 		}
 	}
 
-	~Window() {
+	~Window() noexcept {
 		CloseWindow();
 	}
 
@@ -31,7 +31,7 @@ struct NewTexture {
 			throw std::runtime_error("Failed to load texture: ");
 	}
 
-	~NewTexture() {
+	~NewTexture() noexcept {
 		if (_texture.id != 0) {
 			UnloadTexture(_texture);
 			_texture = {};
@@ -103,7 +103,7 @@ struct StartDrawing
 		BeginDrawing();
 	}
 
-	~StartDrawing()
+	~StartDrawing() noexcept
 	{
 		EndDrawing();
 	}

@@ -24,7 +24,7 @@
 #include "raylib.h"
 #include "game.hpp"
 #include "GameStates.hpp"
-
+#include <iostream>
 
 //------------------------------------------------------------------------------------
 // Program main entry point
@@ -35,20 +35,32 @@ int main()
 
     SetTargetFPS(60);
 
-    GameState app ;
+    try {
+        GameState app{};
 
-    // Main game loop
-    while (!WindowShouldClose())  
-    {
-        app.Update();
-        // Draw
-        //----------------------------------------------------------------------------------
-        StartDrawing draw;
+        // Main game loop
+        while (!WindowShouldClose())
+        {
+            app.Update();
+            // Draw
+            //----------------------------------------------------------------------------------
+            StartDrawing draw;
 
-        ClearBackground(BLACK);
-        app.Render();
+            ClearBackground(BLACK);
+            app.Render();
 
-        //----------------------------------------------------------------------------------
+            //----------------------------------------------------------------------------------
+        }
+
+    }
+    catch (const std::runtime_error& e) {
+        std::println(std::cerr, "Exception: %s", e.what());
+    }
+    catch (const std::exception& e) {
+        std::println(std::cerr, "Exception: %s", e.what());
+    }
+    catch (...) {
+        std::println(std::cerr, "Unknown exception occurred.");
     }
     return 0;
 }
